@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.java.mapper.Sys_UserMapper">
+	<!-- 按用户名密码查询 -->
+	<select id="Sys_User_Select" parameterType="sys_User"
+		resultType="sys_User">
+		select * from sys_user where user_name=#{user_name} and
+		user_password=#{user_password}
+	</select>
+	<!-- 模糊查询 -->
+	<select id="Sys_User_SelectTo" resultType="sys_User"
+		parameterType="java.util.Map">
+		SELECT * FROM `sys_user`
+		<where>
+			<if test="user_name!=null and user_name!=''">
+				user_name LIKE '%${user_name}%'
+			</if>
+			<if test="user_role_id !=null and user_role_id!=''">
+				AND `user_role_id` LIKE '%${user_role_id}%'
+			</if>
+		</where>
+		LIMIT ${(pageNow-1)*pageSize},${pageSize}
+	</select>
+	<!-- 模糊查询总条数 -->
+	<select id="Sys_User_SelectCountTo" resultType="long"
+		parameterType="java.util.Map">
+		SELECT COUNT(1) FROM `sys_user`
+		<where>
+			<if test="user_name!=null and user_name!=''">
+				user_name LIKE '%${user_name}%'
+			</if>
+			<if test="user_role_id !=null and user_role_id!=''">
+				AND `user_role_id` LIKE '%${user_role_id}%'
+			</if>
+		</where>
+	</select>
+	<!-- 添加 -->
+	<insert id="Sys_User_Insert" parameterType="sys_user">
+		INSERT INTO sys_user
+		VALUES(NULL,#{user_name},#{user_password},#{user_role_id},#{user_flag})
+	</insert>
+	<!-- 删除 -->
+	<delete id="Sys_User_Delete" parameterType="long">
+		delete from sys_user
+		where user_id=#{user_id}
+	</delete>
+	<!-- 一对一 -->
+	<resultMap type="sys_user" id="userAndRole">
+		<id property="user_id" column="user_id" />
+		<result property="user_name" column="user_name" />
+		<result property="user_password" column="user_password" />
+		<result property="user_role_id" column="user_role_id" />
+		<result property="user_flag" column="user_flag" />
+		<association property="role" javaType="sys_role">
+			<id property="role_id" column="role_id" />
+			<result property="role_name" column="role_name" />
+			<result property="role_desc" column="role_desc" />
+			<result property="role_flag" column="role_flag" />
+		</association>
+	</resultMap>
+	<!-- 按id查询 -->
+	<select id="Sys_User_SelectById" parameterType="map" resultMap="userAndRole">
+		select * from sys_user,sys_role
+		<where>
+			role_id = user_role_id
+			<if test="user.user_id != null">and user_id = #{user.user_id}</if>
+			<if test="user.user_name != null and user.user_name != ''">and user_name like '%${user.user_name}%'</if>
+			<if test="user.user_password != null and user.user_password != ''">and user_password = #{user.user_password}</if>
+			<if test="user.user_role_id != null">and user_role_id = #{user.user_role_id}</if>
+		</where>
+		order by user_id
+		${pageSql}
+	</select>
+	<!-- 修改 -->
+	<update id="Sys_User_Update" parameterType="sys_user">
+		UPDATE sys_user SET
+		user_role_id = ${user_role_id} WHERE user_id = ${user_id}
+	</update>
+	<select id="selectUserid" resultType="sys_user">
+		select * from sys_user
+		where user_id=#{user_id}
+	</select>
+</mapper>
+

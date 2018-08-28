@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.java.mapper.Sal_ChanceMapper">
+	<!-- 添加 -->
+	<insert id="Sal_Chance_Insert" parameterType="sal_Chance">
+		INSERT INTO
+		sal_chance VALUES(NULL,#{chc_source},#{chc_cust_name},#{chc_title},
+		#{chc_rate},#{chc_linkman},#{chc_tel},#{chc_desc},#{chc_create_id},#{chc_create_by},#{chc_create_date},#{chc_due_id},#{chc_due_to},#{chc_due_date},#{chc_status})
+	</insert>
+	<!-- 模糊查询 -->
+	<select id="Sal_Chance_Select" resultType="sal_Chance"
+		parameterType="java.util.Map">
+		SELECT * FROM `sal_chance`
+		<where>
+			<if test="chc_cust_name!=null and chc_cust_name!=''">
+			 `chc_cust_name` LIKE '%${chc_cust_name}%'
+			</if>
+			<if test="chc_title!=null and chc_title!=''">
+				AND `chc_title` LIKE '%${chc_title}%'
+			</if>
+			<if test="chc_linkman!=null and chc_linkman!=''">
+				AND `chc_linkman` LIKE '%${chc_linkman}%'
+			</if>
+		</where>
+		LIMIT ${(pageNow-1)*pageSize},${pageSize}
+	</select>
+	<!-- 模糊查询总条数 -->
+	<select id="Sal_Chance_SelectCount" resultType="long"
+		parameterType="java.util.Map">
+		SELECT COUNT(1) FROM `sal_chance`
+		<where>
+			<if test="chc_cust_name!=null and chc_cust_name!=''">
+			 `chc_cust_name` LIKE '%${chc_cust_name}%'
+			</if>
+			<if test="chc_title!=null and chc_title!=''">
+				AND `chc_title` LIKE '%${chc_title}%'
+			</if>
+			<if test="chc_linkman!=null and chc_linkman!=''">
+				AND `chc_linkman` LIKE '%${chc_linkman}%'
+			</if>
+		</where>
+	</select>
+	<!-- 修改 -->
+	<update id="Sal_chance_Update" parameterType="sal_Chance">
+		update `sal_chance` set `chc_due_to` = #{chc_due_to} , `chc_due_date` =
+		#{chc_due_date} where `chc_id` = #{chc_id}
+	</update>
+	<!-- 通过chc_id查询sal_Chance表中的数据 -->
+	<select id="selectUserNameByid" resultType="sal_Chance">
+		select * from sal_chance where chc_id=#{chc_id}
+	</select>
+
+	<!-- 联合用户表查询可以指派的用户 -->
+	<select id="SelectUserName" resultType="sys_User">
+		select * from sys_user
+	</select>
+	<!-- 删除 -->
+	<delete id="Sal_chance_Delete" parameterType="long">
+		delete from sal_chance
+		where chc_id=#{chc_id}
+	</delete>
+
+</mapper>
+

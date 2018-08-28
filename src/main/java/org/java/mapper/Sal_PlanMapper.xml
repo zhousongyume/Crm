@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="org.java.mapper.Sal_PlanMapper">
+	<!-- 添加 -->
+	<insert id="Sal_Plan_Insert" parameterType="sal_Plan">
+		INSERT INTO `sal_plan` VALUES(NULL,#{pla_chc_id},#{pla_date},#{pla_todo},NULL)
+	</insert>
+	<!-- 模糊查询 -->
+	<select id="Sal_Chance_Select" resultType="sal_Chance"
+		parameterType="java.util.Map">
+		SELECT * FROM `sal_chance`
+		<where>
+			<if test="chc_cust_name!=null and chc_cust_name!=''">
+			 `chc_cust_name` LIKE '%${chc_cust_name}%'
+			</if>
+			<if test="chc_title!=null and chc_title!=''">
+				AND `chc_title` LIKE '%${chc_title}%'
+			</if>
+			<if test="chc_linkman!=null and chc_linkman!=''">
+				AND `chc_linkman` LIKE '%${chc_linkman}%'
+			</if>
+		</where>
+		LIMIT ${(pageNow-1)*pageSize},${pageSize}
+	</select>
+	<!-- 模糊查询总条数 -->
+	<select id="Sal_Chance_SelectCount" resultType="long"
+		parameterType="java.util.Map">
+		SELECT COUNT(1) FROM `sal_chance`
+		<where>
+			<if test="chc_cust_name!=null and chc_cust_name!=''">
+			 `chc_cust_name` LIKE '%${chc_cust_name}%'
+			</if>
+			<if test="chc_title!=null and chc_title!=''">
+				AND `chc_title` LIKE '%${chc_title}%'
+			</if>
+			<if test="chc_linkman!=null and chc_linkman!=''">
+				AND `chc_linkman` LIKE '%${chc_linkman}%'
+			</if>
+		</where>
+	</select>
+	<!-- 修改销售计划信息 -->
+	<update id="Update_Sal_Plan" parameterType="sal_plan">
+		UPDATE `sal_plan`
+		<set>
+			<if test="pla_todo!=null and pla_todo!=''">
+				`pla_todo`=#{pla_todo}
+			</if>
+			<if test="pla_result!=null and pla_result!=''">
+				pla_result=#{pla_result}
+			</if>
+		</set>
+		WHERE `pla_id`=#{pla_id}
+	</update>
+	<!-- 通过chc_id查询sal_Chance表中的数据 -->
+	<select id="selectUserNameByid" resultType="sal_Chance">
+		select * from sal_Chance where chc_id=#{chc_id}
+	</select>
+	
+	<!-- 通过chc_id查询sal_Chance表中的数据 -->
+	<select id="Sal_Plan_SelectByid" resultType="sal_Plan">
+		select * from sal_plan where pla_chc_id=#{pla_chc_id}
+	</select>
+	
+	<!-- 联合用户表查询可以指派的用户 -->
+	<select id="Select_Sal_Chance_status" resultType="sal_Chance">
+		select chc_status from sal_chance
+	</select>
+	<!-- 联合用户表查询可以指派的用户 -->
+	<select id="selectUserName" resultType="sys_User">
+		select * from sys_user
+	</select>
+	<!-- 删除 -->
+	<delete id="Sal_Plan_Delete" parameterType="int">
+		delete from sal_plan where pla_id=#{pla_id}
+	</delete>
+	<!-- 修改状态-->
+	<update id="updateStatus"  parameterType="sal_Chance">
+		UPDATE `sal_chance` SET `chc_status`=#{chc_status} WHERE `chc_id`=#{chc_id}
+	</update>
+	
+	
+</mapper>
+
+
